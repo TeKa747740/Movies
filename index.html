@@ -229,6 +229,90 @@
       0% { opacity: 0; transform: translateY(-40px) scale(0.95); }
       100% { opacity: 1; transform: translateY(0) scale(1); }
     }
+
+    @media (max-width: 700px) {
+  .movies-container {
+    gap: 10px;
+  }
+  .movie-card {
+    width: 46vw;
+    min-width: 140px;
+    max-width: 180px;
+    padding: 8px;
+    margin: 0 auto;
+  }
+  .movie-card img {
+    border-radius: 6px;
+    height: 180px;
+    object-fit: cover;
+  }
+  .section-title {
+    font-size: 1.2rem;
+    margin: 12px 0 6px;
+  }
+  .filters {
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+  .filters button {
+    font-size: 0.9rem;
+    padding: 7px 10px;
+    border-radius: 6px;
+  }
+  .welcome-logo {
+    font-size: 1.1rem;
+    padding: 0 4px;
+    margin-bottom: 14px;
+  }
+  .welcome-logo .welcome-text,
+  .welcome-logo .logo-text {
+    font-size: 1.1rem;
+    padding: 4px 8px 4px 4px;
+  }
+  .anime-top-card {
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 4px;
+    gap: 10px;
+    max-width: 98vw;
+  }
+  .anime-top-img {
+    width: 120px;
+    height: 170px;
+    border-radius: 8px;
+  }
+  .anime-top-title {
+    font-size: 1.1rem;
+  }
+  .anime-top-rating {
+    font-size: 0.95rem;
+  }
+  .anime-top-desc {
+    font-size: 0.95rem;
+  }
+  #searchInput {
+    width: 98vw;
+    font-size: 0.95rem;
+    padding: 7px;
+    border-radius: 7px;
+  }
+}
+@media (max-width: 400px) {
+  .movie-card {
+    width: 90vw;
+    min-width: 100px;
+    max-width: 98vw;
+    padding: 4px;
+  }
+  .movie-card img {
+    height: 120px;
+  }
+  .anime-top-img {
+    width: 80px;
+    height: 110px;
+  }
+}
   </style>
 </head>
 <body>
