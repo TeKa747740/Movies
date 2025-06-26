@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>تفاصيل العمل</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: 'Tahoma', sans-serif;
+      padding: 20px;
+    }
+
+    .details-container {
+      max-width: 800px;
+      margin: auto;
+      background-color: #1a1a1a;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 0 10px #000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .details-container img {
+      max-width: 100%;
+      border-radius: 10px;
+    }
+
+    .details-container h1 {
+      color: red;
+      margin: 20px 0 10px;
+      font-size: 2rem;
+      text-align: center;
+    }
+
+    .details-container p {
+      font-size: 1rem;
+      margin-bottom: 10px;
+      color: #ccc;
+      text-align: center;
+    }
+
+    .details-buttons {
+      margin-top: 20px;
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .details-buttons a {
+      background-color: red;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      text-decoration: none;
+      transition: background-color 0.3s ease;
+    }
+
+    .details-buttons a:hover {
+      background-color: darkred;
+    }
+
+    .cast-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      margin-top: 30px;
+    }
+    .cast-member {
+      width: 120px;
+      text-align: center;
+    }
+    .cast-member img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 0 5px #000;
+    }
+    .cast-member strong {
+      display: block;
+      margin-top: 5px;
+      color: #fff;
+      font-size: 0.9rem;
+    }
+    .cast-member p {
+      margin: 0;
+      color: #aaa;
+      font-size: 0.8rem;
+    }
+
+    #video-player-container {
+      display: none;
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    #video-player {
+      max-width: 100%;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #000;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="details-container">
+    <img id="details-image" src="" alt="poster">
+    <h1 id="details-title">عنوان</h1>
+    <p id="details-rating">⭐ التقييم</p>
+    <p id="details-description">الوصف</p>
+
+    <div class="details-buttons">
+      <a id="watch-link" href="#">🎬 مشاهدة مباشرة</a>
+      <a id="download-link" href="#" target="_blank">⬇️ تحميل</a>
+      <a href="index.html">🏠 الصفحة الرئيسية</a>
+    </div>
+
+    <div id="parts-section" style="width:100%;margin:30px auto 0 auto;max-width:800px;display:none;">
+      <h2 style="color:red;text-align:center;font-size:1.3rem;">الأجزاء / المواسم</h2>
+      <div id="parts-list" style="display:flex;gap:15px;overflow-x:auto;justify-content:center;"></div>
+    </div>
+    <!-- ✅ مشغل الفيديو -->
+    <div id="video-player-container">
+      <video id="video-player" controls>
+        <source id="video-source" src="" type="video/mp4">
+        متصفحك لا يدعم تشغيل الفيديو.
+      </video>
+    </div>
+  </div>
+
+  <!-- ✅ طاقم العمل -->
+  <h2 style="text-align:center; margin-top: 40px;">طاقم العمل</h2>
+  <div id="cast-container" class="cast-list"></div>
+
+  <script src="tmdb-fetch.js"></script>
+  <script>
+    // ✅ قراءة البيانات من الرابط
+    const urlParams = new URLSearchParams(window.location.search);
+    const tmdbId = urlParams.get("tmdb_id");
+    const title = decodeURIComponent(urlParams.get("title") || "بدون عنوان");
+    const rating = decodeURIComponent(urlParams.get("rating") || "غير معروف");
+    const image = decodeURIComponent(urlParams.get("image") || "");
+    const description = decodeURIComponent(urlParams.get("description") || "لا يوجد وصف.");
+    const watchLink = decodeURIComponent(urlParams.get("watchLink") || "#");
+    const downloadLink = decodeURIComponent(urlParams.get("downloadLink") || "#");
+    const castData = urlParams.get("cast");
+    const fromSection = urlParams.get("from");
+
+    window.defaultPoster = "https://via.placeholder.com/400x600?text=No+Image";
+    // لا تعرّف API_KEY و BASE_URL و IMAGE_BASE_URL هنا، بل استخدمها من tmdb-fetch.js
+
+    document.getElementById("details-title").textContent = title;
+    document.getElementById("details-rating").textContent = `⭐ ${rating}`;
+    document.getElementById("details-description").textContent = description;
+    document.getElementById("details-image").src = image || window.defaultPoster;
+    document.getElementById("details-image").onerror = function() {
+      this.src = window.defaultPoster;
+    };
+    document.getElementById("download-link").href = downloadLink;
+
+    // زر الرجوع للقسم السابق
+    const backBtn = document.createElement('a');
+    backBtn.textContent = '⬅️ رجوع';
+    backBtn.style.backgroundColor = 'gray';
+    backBtn.style.marginRight = '10px';
+    backBtn.style.textDecoration = 'none';
+    backBtn.style.padding = '10px 20px';
+    backBtn.style.borderRadius = '5px';
+    backBtn.style.color = 'white';
+    backBtn.style.cursor = 'pointer';
+    backBtn.onclick = function(e) {
+      e.preventDefault();
+      // الرجوع للقسم فقط بدون إعادة تحميل الصفحة الرئيسية بالكامل
+      if (fromSection === 'anime') {
+        window.location.replace('index.html?from=anime');
+      } else if (fromSection === 'series') {
+        window.location.replace('index.html?from=series');
+      } else if (fromSection === 'egyptianSeries') {
+        window.location.replace('index.html?from=egyptianSeries');
+      } else {
+        window.location.replace('index.html');
+      }
+    };
+    document.querySelector('.details-buttons').prepend(backBtn);
+
+    // ✅ التعامل مع زر المشاهدة
+    document.getElementById("watch-link").addEventListener("click", function (e) {
+      e.preventDefault();
+      if (watchLink.endsWith(".mp4") || watchLink.includes("video")) {
+        document.getElementById("video-source").src = watchLink;
+        document.getElementById("video-player").load();
+        document.getElementById("video-player-container").style.display = "block";
+        document.getElementById("video-player-container").scrollIntoView({ behavior: "smooth" });
+      } else {
+        window.open(watchLink, "_blank");
+      }
+    });
+
+    // ✅ عرض الكاست إن وُجد
+    const castContainer = document.getElementById("cast-container");
+    if (castData) {
+      try {
+        const castList = JSON.parse(decodeURIComponent(castData));
+        if (Array.isArray(castList) && castList.length > 0) {
+          castList.forEach(member => {
+            const div = document.createElement("div");
+            div.className = "cast-member";
+            div.innerHTML = `
+              <img src="${member.image || window.defaultPoster}" alt="${member.name}" onerror="this.src='${window.defaultPoster}'" />
+              <strong>${member.name}</strong>
+              ${member.character && !/^\(?self\)?$/i.test(member.character.trim()) ? `<p>${member.character}</p>` : ''}
+            `;
+            castContainer.appendChild(div);
+          });
+        } else {
+          castContainer.innerHTML = '<p style="color:#aaa;">لا يوجد طاقم عمل متوفر.</p>';
+        }
+      } catch (e) {
+        castContainer.innerHTML = '<p style="color:#aaa;">تعذر تحميل طاقم العمل.</p>';
+        console.error("فشل في تحميل الكاست:", e);
+      }
+    } else {
+      castContainer.innerHTML = '<p style="color:#aaa;">لا يوجد طاقم عمل متوفر.</p>';
+    }
+
+    async function fetchMovieFromTMDB(title) {
+      try {
+        const searchUrl = `${BASE_URL}/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(title)}`;
+        const searchRes = await fetch(searchUrl);
+        const searchData = await searchRes.json();
+        if (searchData.results && searchData.results.length > 0) {
+          const movie = searchData.results[0];
+          // جلب التفاصيل والكاست
+          const detailsUrl = `${BASE_URL}/movie/${movie.id}?api_key=${API_KEY}&language=ar`;
+          const creditsUrl = `${BASE_URL}/movie/${movie.id}/credits?api_key=${API_KEY}&language=ar`;
+          const [detailsRes, creditsRes] = await Promise.all([
+            fetch(detailsUrl),
+            fetch(creditsUrl)
+          ]);
+          const details = await detailsRes.json();
+          const credits = await creditsRes.json();
+          return {
+            title: details.title || title,
+            rating: details.vote_average ? details.vote_average.toFixed(1) : "غير معروف",
+            image: details.poster_path ? IMAGE_BASE_URL + details.poster_path : window.defaultPoster,
+            description: details.overview || "لا يوجد وصف.",
+            cast: (credits.cast || []).slice(0, 10).map(member => ({
+              name: member.name,
+              character: member.character,
+              image: member.profile_path ? IMAGE_BASE_URL + member.profile_path : window.defaultPoster
+            }))
+          };
+        }
+      } catch (e) {
+        console.error("TMDB fetch error", e);
+      }
+      return null;
+    }
+
+    // ✅ جلب تفاصيل الفيلم من TMDB بالمعرف مباشرة
+    async function fetchMovieFromTMDBById(id) {
+      try {
+        const detailsUrl = `${BASE_URL}/movie/${id}?api_key=${API_KEY}&language=ar`;
+        const creditsUrl = `${BASE_URL}/movie/${id}/credits?api_key=${API_KEY}&language=ar`;
+        const [detailsRes, creditsRes] = await Promise.all([
+          fetch(detailsUrl),
+          fetch(creditsUrl)
+        ]);
+        const details = await detailsRes.json();
+        const credits = await creditsRes.json();
+        return {
+          title: details.title || "بدون عنوان",
+          rating: details.vote_average ? details.vote_average.toFixed(1) : "غير معروف",
+          image: details.poster_path ? IMAGE_BASE_URL + details.poster_path : window.defaultPoster,
+          description: details.overview || "لا يوجد وصف.",
+          cast: (credits.cast || []).slice(0, 10).map(member => ({
+            name: member.name,
+            character: member.character,
+            image: member.profile_path ? IMAGE_BASE_URL + member.profile_path : window.defaultPoster
+          }))
+        };
+      } catch (e) {
+        console.error("TMDB fetch error", e);
+      }
+      return null;
+    }
+
+    // ✅ دعم عرض تفاصيل المسلسل أيضًا (tv)
+    async function fetchShowFromTMDBById(id) {
+      try {
+        const detailsUrl = `${BASE_URL}/tv/${id}?api_key=${API_KEY}&language=ar`;
+        const creditsUrl = `${BASE_URL}/tv/${id}/credits?api_key=${API_KEY}&language=ar`;
+        const [detailsRes, creditsRes] = await Promise.all([
+          fetch(detailsUrl),
+          fetch(creditsUrl)
+        ]);
+        const details = await detailsRes.json();
+        const credits = await creditsRes.json();
+        return {
+          title: details.name || title,
+          rating: details.vote_average ? details.vote_average.toFixed(1) : "غير معروف",
+          image: details.poster_path ? IMAGE_BASE_URL + details.poster_path : window.defaultPoster,
+          description: details.overview || "لا يوجد وصف.",
+          cast: (credits.cast || []).slice(0, 10).map(member => ({
+            name: member.name,
+            character: member.character,
+            image: member.profile_path ? IMAGE_BASE_URL + member.profile_path : window.defaultPoster
+          }))
+        };
+      } catch (e) {
+        console.error("TMDB fetch error", e);
+      }
+      return null;
+    }
+
+    async function fetchMoviePartsFromTMDB(movieId) {
+      // جلب تفاصيل الفيلم لمعرفة belongs_to_collection
+      const detailsUrl = `${BASE_URL}/movie/${movieId}?api_key=${API_KEY}&language=ar`;
+      const detailsRes = await fetch(detailsUrl);
+      const details = await detailsRes.json();
+      let currentMovieId = Number(movieId);
+      // إصلاح: أحياناً بعض الأفلام لا تعود مع خاصية belongs_to_collection رغم أنها جزء من مجموعة
+      // إذا لم توجد belongs_to_collection، جرب جلب المجموعات يدوياً عبر البحث عن اسم الفيلم + "Collection"
+      if (details.belongs_to_collection && details.belongs_to_collection.id) {
+        const collectionId = details.belongs_to_collection.id;
+        const collectionUrl = `${BASE_URL}/collection/${collectionId}?api_key=${API_KEY}&language=ar`;
+        const collectionRes = await fetch(collectionUrl);
+        const collection = await collectionRes.json();
+        if (collection.parts && collection.parts.length > 1) {
+          // ترتيب الأجزاء حسب release_date
+          collection.parts.sort((a, b) => (a.release_date || '').localeCompare(b.release_date || ''));
+          // إصلاح: ضع علامة على الجزء الحالي
+          return collection.parts.map(part => ({
+            id: part.id,
+            title: part.title,
+            image: part.poster_path ? IMAGE_BASE_URL + part.poster_path : window.defaultPoster,
+            type: 'movie',
+            isCurrent: Number(part.id) === currentMovieId
+          }));
+        }
+      } else {
+        // محاولة جلب المجموعة يدوياً إذا لم توجد خاصية belongs_to_collection
+        if (details.title) {
+          // جرب البحث باسم الفيلم كاملاً وليس فقط أول كلمة
+          const searchColUrl = `${BASE_URL}/search/collection?api_key=${API_KEY}&language=ar&query=${encodeURIComponent(details.title)}`;
+          let searchColRes = await fetch(searchColUrl);
+          let searchColData = await searchColRes.json();
+          // إذا لم توجد نتائج، جرب البحث بأول كلمة فقط
+          if (!searchColData.results || searchColData.results.length === 0) {
+            const firstWord = details.title.split(' ')[0];
+            const searchColUrl2 = `${BASE_URL}/search/collection?api_key=${API_KEY}&language=ar&query=${encodeURIComponent(firstWord)}`;
+            searchColRes = await fetch(searchColUrl2);
+            searchColData = await searchColRes.json();
+          }
+          if (searchColData.results && searchColData.results.length > 0) {
+            // ابحث عن مجموعة تحتوي على اسم الفيلم الحالي
+            const found = searchColData.results.find(col => col.name && (col.name.includes(details.title) || col.name.includes(details.title.split(' ')[0])));
+            if (found && found.id) {
+              const collectionUrl = `${BASE_URL}/collection/${found.id}?api_key=${API_KEY}&language=ar`;
+              const collectionRes = await fetch(collectionUrl);
+              const collection = await collectionRes.json();
+              if (collection.parts && collection.parts.length > 1) {
+                collection.parts.sort((a, b) => (a.release_date || '').localeCompare(b.release_date || ''));
+                return collection.parts.map(part => ({
+                  id: part.id,
+                  title: part.title,
+                  image: part.poster_path ? IMAGE_BASE_URL + part.poster_path : window.defaultPoster,
+                  type: 'movie',
+                  isCurrent: Number(part.id) === currentMovieId
+                }));
+              }
+            }
+          }
+        }
+      }
+      return [];
+    }
+
+    async function fetchShowSeasonsFromTMDB(tvId) {
+      // جلب تفاصيل المسلسل لمعرفة المواسم
+      const detailsUrl = `${BASE_URL}/tv/${tvId}?api_key=${API_KEY}&language=ar`;
+      const detailsRes = await fetch(detailsUrl);
+      const details = await detailsRes.json();
+      if (details.seasons && details.seasons.length > 1) {
+        return details.seasons.map(season => ({
+          id: season.id,
+          season_number: season.season_number,
+          title: season.name,
+          image: season.poster_path ? IMAGE_BASE_URL + season.poster_path : window.defaultPoster,
+          tv_id: tvId,
+          type: 'season'
+        }));
+      }
+      return [];
+    }
+
+    function renderPartsList(parts, type, tvId) {
+      const section = document.getElementById('parts-section');
+      const list = document.getElementById('parts-list');
+      if (parts && parts.length > 1) {
+        section.style.display = 'block';
+        list.innerHTML = '';
+        parts.forEach(part => {
+          const div = document.createElement('div');
+          div.style.width = '120px';
+          div.style.flex = '0 0 auto';
+          div.style.textAlign = 'center';
+          div.innerHTML = `
+            <img src="${part.image}" alt="${part.title}" style="width:100px;height:150px;border-radius:8px;object-fit:cover;box-shadow:0 0 5px #000;${part.isCurrent ? 'border:3px solid red;' : ''}" onerror="this.src='${window.defaultPoster}'" />
+            <div style="color:#fff;font-size:0.95rem;margin-top:5px;${part.isCurrent ? 'color:red;font-weight:bold;' : ''}">${part.title}${part.isCurrent ? ' (الحالي)' : ''}</div>
+          `;
+          div.style.cursor = part.isCurrent ? 'default' : 'pointer';
+          if (!part.isCurrent) {
+            div.onclick = function() {
+              if (type === 'movie') {
+                window.location.href = `details.html?tmdb_id=${part.id}&type=movie&from=${fromSection}`;
+              } else if (type === 'season') {
+                window.location.href = `details.html?tmdb_id=${tvId}&type=tv&season=${part.season_number}&from=${fromSection}`;
+              }
+            };
+          }
+          list.appendChild(div);
+        });
+      } else {
+        section.style.display = 'none';
+      }
+    }
+
+    async function autoFillIfNeeded() {
+      if (tmdbId) {
+        // دعم نوع العمل (فيلم أو مسلسل)
+        const type = urlParams.get("type");
+        let data = null;
+        if (type === "tv") {
+          data = await fetchShowFromTMDBById(tmdbId);
+        } else {
+          data = await fetchMovieFromTMDBById(tmdbId);
+        }
+        if (data && data.title && data.title !== "") {
+          document.getElementById("details-title").textContent = data.title;
+          document.getElementById("details-rating").textContent = `⭐ ${data.rating}`;
+          document.getElementById("details-description").textContent = data.description;
+          document.getElementById("details-image").src = data.image;
+          document.getElementById("details-image").onerror = function() { this.src = window.defaultPoster; };
+          // عرض الكاست
+          const castContainer = document.getElementById("cast-container");
+          if (data.cast && data.cast.length > 0) {
+            castContainer.innerHTML = "";
+            data.cast.forEach(member => {
+              // حذف الشخصيات التي لا تملك صورة أصلية من TMDB
+              if (!member.image || member.image.includes('placeholder') || member.image === window.defaultPoster) return;
+              const div = document.createElement("div");
+              div.className = "cast-member";
+              div.innerHTML = `
+                <img src="${member.image}" alt="${member.name}" onerror="this.src='${window.defaultPoster}'" />
+                <strong>${member.name}</strong>
+                ${member.character && !/^\(?self\)?$/i.test(member.character.trim()) ? `<p>${member.character}</p>` : ''}
+              `;
+              castContainer.appendChild(div);
+            });
+            if (!castContainer.hasChildNodes()) {
+              castContainer.innerHTML = '<p style="color:#aaa;">لا يوجد طاقم عمل متوفر.</p>';
+            }
+          } else {
+            castContainer.innerHTML = '<p style="color:#aaa;">لا يوجد طاقم عمل متوفر.</p>';
+          }
+          // جلب وعرض الأجزاء أو المواسم
+          if (type === 'tv') {
+            const seasons = await fetchShowSeasonsFromTMDB(tmdbId);
+            renderPartsList(seasons, 'season', tmdbId);
+          } else {
+            const parts = await fetchMoviePartsFromTMDB(tmdbId);
+            renderPartsList(parts, 'movie');
+          }
+        } else {
+          // إذا لم يتم جلب التفاصيل من TMDB، جرب البحث بالعنوان
+          if (title && title !== "بدون عنوان") {
+            const movie = await fetchMovieFromTMDB(title);
+            if (movie) {
+              document.getElementById("details-title").textContent = movie.title;
+              document.getElementById("details-rating").textContent = `⭐ ${movie.rating}`;
+              document.getElementById("details-description").textContent = movie.description;
+              document.getElementById("details-image").src = movie.image;
+              document.getElementById("details-image").onerror = function() { this.src = window.defaultPoster; };
+              // عرض الكاست
+              const castContainer = document.getElementById("cast-container");
+              if (movie.cast && movie.cast.length > 0) {
+                castContainer.innerHTML = "";
+                movie.cast.forEach(member => {
+                  // حذف الشخصيات التي لا تملك صورة أصلية من TMDB
+                  if (!member.image || member.image.includes('placeholder') || member.image === window.defaultPoster) return;
+                  const div = document.createElement("div");
+                  div.className = "cast-member";
+                  div.innerHTML = `
+                    <img src="${member.image}" alt="${member.name}" onerror="this.src='${window.defaultPoster}'" />
+                    <strong>${member.name}</strong>
+                    ${member.character && !/^\(?self\)?$/i.test(member.character.trim()) ? `<p>${member.character}</p>` : ''}
+                  `;
+                  castContainer.appendChild(div);
+                });
+                if (!castContainer.hasChildNodes()) {
+                  castContainer.innerHTML = '<p style="color:#aaa;">لا يوجد طاقم عمل متوفر.</p>';
+                }
+              } else {
+                castContainer.innerHTML = '<p style="color:#aaa;">لا يوجد طاقم عمل متوفر.</p>';
+              }
+            } else {
+              document.getElementById("details-title").textContent = "بدون عنوان";
+              document.getElementById("details-rating").textContent = "⭐ غير معروف";
+              document.getElementById("details-description").textContent = "لا يوجد وصف.";
+              document.getElementById("details-image").src = window.defaultPoster;
+              document.getElementById("cast-container").innerHTML = '<p style="color:#aaa;">لا يوجد طاقم عمل متوفر.</p>';
+            }
+          } else {
+            document.getElementById("details-title").textContent = "بدون عنوان";
+            document.getElementById("details-rating").textContent = "⭐ غير معروف";
+            document.getElementById("details-description").textContent = "لا يوجد وصف.";
+            document.getElementById("details-image").src = window.defaultPoster;
+            document.getElementById("cast-container").innerHTML = '<p style="color:#aaa;">لا يوجد طاقم عمل متوفر.</p>';
+          }
+        }
+        return;
+      }
+      let needFetch = false;
+      if (!image || image === window.defaultPoster) needFetch = true;
+      if (!description || description === "لا يوجد وصف.") needFetch = true;
+      if (!rating || rating === "غير معروف") needFetch = true;
+      if (!castData) needFetch = true;
+
+      if (needFetch && title && title !== "بدون عنوان") {
+        const movie = await fetchMovieFromTMDB(title);
+        if (movie) {
+          document.getElementById("details-title").textContent = movie.title;
+          document.getElementById("details-rating").textContent = `⭐ ${movie.rating}`;
+          document.getElementById("details-description").textContent = movie.description;
+          document.getElementById("details-image").src = movie.image;
+          document.getElementById("details-image").onerror = function() { this.src = window.defaultPoster; };
+          // عرض الكاست
+          const castContainer = document.getElementById("cast-container");
+          if (movie.cast && movie.cast.length > 0) {
+            castContainer.innerHTML = "";
+            movie.cast.forEach(member => {
+              // إلغاء الشخصية إذا لم تتوفر صورة أو اسم
+              if (!member.image || member.image.includes('placeholder') || !member.name) return;
+              const div = document.createElement("div");
+              div.className = "cast-member";
+              div.innerHTML = `
+                <img src="${member.image}" alt="${member.name}" onerror="this.src=window.defaultPoster" />
+                <strong>${member.name}</strong>
+                ${member.character && !/^\(?self\)?$/i.test(member.character.trim()) ? `<p>${member.character}</p>` : ''}
+              `;
+              castContainer.appendChild(div);
+            });
+            // إذا لم يتم إضافة أي عنصر بعد التصفية
+            if (!castContainer.hasChildNodes()) {
+              castContainer.innerHTML = '<p style="color:#aaa;">لا يوجد طاقم عمل متوفر.</p>';
+            }
+          } else {
+            castContainer.innerHTML = '<p style="color:#aaa;">لا يوجد طاقم عمل متوفر.</p>';
+          }
+        }
+      }
+    }
+
+    // ✅ تعبئة البيانات الأولية
+    autoFillIfNeeded();
+  </script>
+
+</body>
+</html>

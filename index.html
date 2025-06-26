@@ -1,0 +1,995 @@
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>موقع الأفلام</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap');
+    body
+ {
+      background-color: #111;
+      color: white;
+      font-family: 'Tahoma', sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      color: red;
+      margin-bottom: 10px;
+    }
+
+    .search-container {
+      margin-bottom: 20px;
+    }
+
+    #searchInput {
+      padding: 10px;
+      width: 70%;
+      border-radius: 10px;
+      border: none;
+      font-size: 1rem;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 30px;
+    }
+
+    .filters button {
+      background-color: #333;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      transition: 0.3s;
+    }
+
+    .filters button:hover {
+      background-color: red;
+    }
+
+    .section-title {
+      color: red;
+      font-size: 1.8rem;
+      margin: 20px 0 10px;
+    }
+
+    .movies-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .movie-card {
+      background-color: #222;
+      padding: 15px;
+      border-radius: 10px;
+      width: 180px;
+      text-align: center;
+      box-shadow: 0 0 10px #000;
+    }
+
+    .movie-card img {
+      width: 100%;
+      border-radius: 8px;
+    }
+
+    .movie-card h3 {
+      font-size: 1.1rem;
+      margin: 10px 0 5px;
+    }
+
+    .movie-card p {
+      margin: 5px 0;
+    }
+
+    .movie-card button {
+      background-color: red;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .movie-card button:hover {
+      background-color: darkred;
+    }
+
+    /* ✅ شريط علوي مطابق للصورة */
+    .custom-header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #222;
+      padding: 10px 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px #000;
+      margin-bottom: 20px;
+    }
+
+    .header-icons {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-icon {
+      color: white;
+      font-size: 1.5rem;
+      text-decoration: none;
+    }
+
+    .header-icon img {
+      width: 24px;
+      height: 24px;
+    }
+
+    .header-menu {
+      list-style: none;
+      display: flex;
+      gap: 15px;
+      margin: 0;
+      padding: 0;
+    }
+
+    .header-menu li {
+      display: inline;
+    }
+
+    .header-menu a {
+      color: white;
+      text-decoration: none;
+      font-size: 1rem;
+      transition: 0.3s;
+    }
+
+    .header-menu a:hover {
+      color: red;
+    }
+
+    .header-logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: white;
+      position: relative;
+    }
+
+    .logo-main {
+      color: red;
+    }
+
+    .logo-sub {
+      color: white;
+      font-size: 0.8rem;
+      position: absolute;
+      top: 50%;
+      left: 100%;
+      transform: translate(-50%, -50%);
+    }
+
+    .welcome-logo {
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-end;
+      margin-bottom: 28px;
+      direction: ltr;
+      animation: fadeInDown 1s cubic-bezier(.23,1.01,.32,1) 0.1s both;
+      background: #181818;
+      border-radius: 12px;
+      box-shadow: 0 4px 18px #000a, 0 1px 0 #fff2 inset;
+      padding: 0 0 0 0;
+      min-width: 0;
+      max-width: 100vw;
+    }
+    .welcome-logo .welcome-text {
+      font-family: 'Montserrat', 'Arial Black', Arial, sans-serif;
+      font-size: 2.1rem;
+      color: #fff;
+      letter-spacing: 2px;
+      background: linear-gradient(90deg, #e50914 80%, #b0060f 100%);
+      padding: 8px 18px 8px 10px;
+      border-radius: 12px 0 0 12px;
+      text-shadow: 2px 2px 8px #000a, 0 1px 0 #fff2;
+      font-weight: 900;
+      transition: transform 0.3s cubic-bezier(.23,1.01,.32,1);
+      margin: 0;
+      display: inline-block;
+    }
+    .welcome-logo .logo-text {
+      font-family: 'Montserrat', 'Arial Black', Arial, sans-serif;
+      font-size: 2.1rem;
+      color: #e50914;
+      background: transparent;
+      padding: 8px 18px 8px 0;
+      border-radius: 0 12px 12px 0;
+      margin-right: -8px;
+      font-weight: 900;
+      text-shadow: 2px 2px 8px #000a, 0 1px 0 #fff2;
+      letter-spacing: 2px;
+      transition: transform 0.3s cubic-bezier(.23,1.01,.32,1);
+      margin-left: 0;
+      display: inline-block;
+    }
+    .welcome-logo:hover .welcome-text,
+    .welcome-logo:hover .logo-text {
+      transform: scale(1.04) rotate(-1deg);
+      filter: brightness(1.1) drop-shadow(0 0 8px #e50914cc);
+    }
+    @keyframes fadeInDown {
+      0% { opacity: 0; transform: translateY(-40px) scale(0.95); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ✅ رسالة ترحيب أعلى الصفحة -->
+  <div class="welcome-logo">
+    <span class="welcome-text">Welcome</span><span class="logo-text">TeKa Movies</span>
+  </div>
+
+  <!-- ✅ شريط البحث -->
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="ابحث عن فيلم..." oninput="searchMovies()">
+  </div>
+
+  <!-- ✅ الفلاتر -->
+  <div class="filters">
+  <button onclick="displayTMDBMovies()">كل الأفلام</button>
+  <button onclick="displayMoviesByGenre(28)">أكشن</button>
+  <button onclick="displayMoviesByGenre(878)">خيال علمي</button>
+  <button onclick="displayMoviesByGenre(27)">رعب</button>
+  <button onclick="displayMoviesByGenre(18)">دراما</button>
+  <button onclick="displayAllSeries()">مسلسلات أجنبية</button>
+  <button onclick="displayEgyptianSeries()">مسلسلات مصرية</button>
+  <button onclick="displayAllAnime()">كل الأنمي</button>
+  <button onclick="displayActionSciFiMovies()">أكشن × خيال علمي (2015-الآن)</button>
+</div>
+
+<!-- ✅ أقسام -->
+<h2 class="section-title" id="movies-section-title">🎥 أفلام</h2>
+<div class="movies-container" id="movies-container"></div>
+<h2 class="section-title" id="series-section-title">📺 مسلسلات أجنبية</h2>
+<div class="movies-container" id="series-container" style="display:none;"></div>
+<h2 class="section-title" id="egyptian-series-section-title" style="display:none;">📺 مسلسلات مصرية</h2>
+<div class="movies-container" id="egyptian-series-container" style="display:none;"></div>
+<h2 class="section-title" id="anime-section-title">🎌 أنمي</h2>
+<div class="movies-container" id="anime-container" style="display:none;"></div>
+<div id="no-movies-message" style="color:#aaa; display:none; font-size:1.2rem; margin:20px;">لا توجد نتائج لهذا التصنيف.</div>
+
+<!-- إصلاح: تعريف دوال TMDB في النافذة لتعمل مع index.html -->
+<script>
+window.fetchPopularMovies = window.fetchPopularMovies || fetchPopularMovies;
+window.fetchMoviesByGenre = window.fetchMoviesByGenre || fetchMoviesByGenre;
+</script>
+<script src="script.js"></script>
+<script src="tmdb-fetch.js"></script>
+<script>
+window.IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
+
+// إظهار رسالة إذا لم توجد نتائج
+function renderList(containerId, list) {
+  const container = document.getElementById(containerId);
+  const noMoviesMsg = document.getElementById('no-movies-message');
+  if (!container) return;
+  container.innerHTML = "";
+  if (list.length === 0) {
+    if (noMoviesMsg) noMoviesMsg.style.display = 'block';
+    return;
+  } else {
+    if (noMoviesMsg) noMoviesMsg.style.display = 'none';
+  }
+  list.forEach(item => {
+    const card = createCard(item);
+    container.appendChild(card);
+  });
+}
+
+// إظهار قسم واحد فقط وإخفاء الباقي
+function showSection(section) {
+  document.getElementById('movies-container').style.display = section === 'movies' ? 'flex' : 'none';
+  document.getElementById('series-container').style.display = section === 'series' ? 'flex' : 'none';
+  document.getElementById('anime-container').style.display = section === 'anime' ? 'flex' : 'none';
+  document.getElementById('egyptian-series-container').style.display = section === 'egyptianSeries' ? 'flex' : 'none';
+  document.getElementById('movies-section-title').style.display = section === 'movies' ? 'block' : 'none';
+  document.getElementById('series-section-title').style.display = section === 'series' ? 'block' : 'none';
+  document.getElementById('anime-section-title').style.display = section === 'anime' ? 'block' : 'none';
+  document.getElementById('egyptian-series-section-title').style.display = section === 'egyptianSeries' ? 'block' : 'none';
+}
+
+// أفلام
+function displayMoviesByGenre(genreId) {
+  showSection('movies');
+  fetchMoviesByGenre(genreId).then(movies => {
+    renderList('movies-container', movies);
+    document.getElementById('movies-section-title').textContent = `🎥 أفلام ${getGenreName(genreId)}`;
+  });
+}
+function displayTMDBMovies() {
+  showSection('movies');
+  fetchPopularMovies().then(movies => {
+    renderList('movies-container', movies);
+    document.getElementById('movies-section-title').textContent = '🎥 أفلام';
+  });
+}
+function displayActionSciFiMovies() {
+  showSection('movies');
+  const apiKey = window.TMDB_API_KEY || 'eae62805e81ccceef6046c841a23b424';
+  const defaultPoster = 'https://via.placeholder.com/400x600?text=No+Image';
+  const genreIds = '28,878';
+  const yearFrom = 2015;
+  const yearTo = new Date().getFullYear();
+  const maxPages = 500; // TMDB يسمح حتى 500 صفحة فقط
+  const urls = [];
+  for (let page = 1; page <= maxPages; page++) {
+    urls.push(`https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&language=ar&page=${page}&sort_by=popularity.desc&with_genres=${genreIds}&primary_release_date.gte=${yearFrom}-01-01&primary_release_date.lte=${yearTo}-12-31`);
+  }
+  // جلب أول 5 صفحات فقط مبدئياً (لتجنب بطء التحميل)، ويمكن زيادة العدد لاحقاً
+  Promise.all(urls.slice(0, 5).map(url => fetch(url).then(r => r.json())))
+    .then(results => {
+      let movies = [];
+      results.forEach(data => {
+        if (data.results) movies = movies.concat(data.results);
+      });
+      if (movies.length === 0) throw new Error('No movies found');
+      const movieCards = movies.map(item => {
+        let img = item.poster_path ? (window.IMAGE_BASE_URL + item.poster_path) : defaultPoster;
+        return {
+          title: item.title || '',
+          rating: item.vote_average ? (item.vote_average + '/10') : '',
+          image: img,
+          poster: img,
+          description: item.overview || '',
+          type: 'movie',
+          id: item.id
+        };
+      });
+      renderList('movies-container', movieCards);
+      document.getElementById('movies-section-title').textContent = `🎥 أفلام أكشن × خيال علمي (${yearFrom} - ${yearTo})`;
+    })
+    .catch(() => {
+      document.getElementById('movies-container').innerHTML = '';
+      document.getElementById('no-movies-message').style.display = 'block';
+      document.getElementById('movies-section-title').textContent = `🎥 أفلام أكشن × خيال علمي (${yearFrom} - ${yearTo})`;
+    });
+}
+
+// أنمي
+function displayAllAnime() {
+  showSection('anime');
+  const apiKey = window.TMDB_API_KEY || 'eae62805e81ccceef6046c841a23b424';
+  const defaultPoster = 'https://via.placeholder.com/400x600?text=No+Image';
+  // جلب 3 صفحات من أشهر الأنميات من TMDB (تصنيف الأنمي: genre=16)
+  const urls = [1, 2, 3].map(function(page) {
+    return `https://api.themoviedb.org/3/discover/tv?api_key=${apiKey}&language=ar&page=${page}&sort_by=popularity.desc&with_genres=16`;
+  });
+  Promise.all(urls.map(function(url) { return fetch(url).then(function(r) { return r.json(); }); }))
+    .then(function(results) {
+      let tmdbAnime = [];
+      results.forEach(function(data) {
+        if (data.results) tmdbAnime = tmdbAnime.concat(data.results);
+      });
+      if (tmdbAnime.length === 0) throw new Error('No anime found');
+      // إبراز الأنمي الأعلى (الأول)
+      const topAnime = tmdbAnime[0];
+      const topImg = topAnime.poster_path ? (window.IMAGE_BASE_URL + topAnime.poster_path) : defaultPoster;
+      const topTitle = topAnime.name || topAnime.title || 'أنمي غير معروف';
+      const topRating = topAnime.vote_average ? (topAnime.vote_average + '/10 ⭐') : 'بدون تقييم';
+      const topDesc = topAnime.overview || '';
+      // عرض كارت مميز في الأعلى
+      const animeContainer = document.getElementById('anime-container');
+      animeContainer.innerHTML = `
+        <div class="anime-top-card">
+          <img class="anime-top-img" src="${topImg}" alt="${topTitle}" onerror="this.onerror=null;this.src='${defaultPoster}'" />
+          <div class="anime-top-details">
+            <h2 class="anime-top-title">${topTitle}</h2>
+            <div class="anime-top-rating">${topRating}</div>
+            <div class="anime-top-desc">${topDesc}</div>
+          </div>
+        </div>
+      `;
+      // بقية الأنميات (بدءًا من الثاني)
+      const restAnime = tmdbAnime.slice(1, 19).map(function(item) {
+        let img = item.poster_path ? (window.IMAGE_BASE_URL + item.poster_path) : defaultPoster;
+        return {
+          title: item.name || item.title || '',
+          rating: item.vote_average ? (item.vote_average + '/10') : '',
+          image: img,
+          poster: img,
+          description: item.overview || '',
+          type: 'anime',
+          id: item.id
+        };
+      });
+      restAnime.forEach(function(item) {
+        const card = createCard(item);
+        animeContainer.appendChild(card);
+      });
+      document.getElementById('anime-section-title').textContent = '🎌 أشهر الأنميات';
+    })
+    .catch(function() {
+      // fallback: عرض ناروتو فقط
+      const narutoAnime = [{
+        title: 'Naruto',
+        rating: '8.8/10',
+        image: 'https://image.tmdb.org/t/p/w500/vauCEnR7CiyBDzRCeElKkCaXIYu.jpg',
+        poster: 'https://image.tmdb.org/t/p/w500/vauCEnR7CiyBDzRCeElKkCaXIYu.jpg',
+        description: 'قصة نينجا شاب يسعى ليصبح هوكاجي. تم تسجيله كأعلى أنمي طلبًا على الإنترنت من قِبل Guinness World Record في 2024.',
+        extra: 'youtube.com, anitrendz.com, en.wikipedia.org, instagram.com',
+        id: 1735
+      }];
+      renderList('anime-container', narutoAnime);
+      document.getElementById('anime-section-title').textContent = '🎌 قسم الأنمي';
+    });
+}
+
+// مسلسلات مصرية
+window.egyptianSeries = [
+  {
+    title: "الاختيار",
+    image: "https://i.imgur.com/1Q9Z1ZB.jpg",
+    poster: "https://i.imgur.com/1Q9Z1ZB.jpg",
+    description: "مسلسل درامي يتناول قصة حقيقية عن أحد أبطال القوات المسلحة المصرية.",
+    watchLink: "https://www.example.com/watch/elkhtyar",
+    downloadLink: "https://www.example.com/download/elkhtyar",
+    cast: [
+      { name: "أمير كرارة", character: "أحمد المنسي", image: "https://i.imgur.com/1Q9Z1ZB.jpg" },
+      { name: "أحمد العوضي", character: "هشام عشماوي", image: "https://i.imgur.com/1Q9Z1ZB.jpg" }
+    ]
+  },
+  {
+    title: "البرنس",
+    image: "https://i.imgur.com/2Q9Z1ZB.jpg",
+    poster: "https://i.imgur.com/2Q9Z1ZB.jpg",
+    description: "دراما اجتماعية عن عائلة البرنس.",
+    watchLink: "https://www.example.com/watch/elprince",
+    downloadLink: "https://www.example.com/download/elprince",
+    cast: [
+      { name: "محمد رمضان", character: "رضوان البرنس", image: "https://i.imgur.com/2Q9Z1ZB.jpg" },
+      { name: "أحمد زاهر", character: "فتحي البرنس", image: "https://i.imgur.com/2Q9Z1ZB.jpg" }
+    ]
+  },
+  {
+    title: "جعفر العمدة",
+    image: "https://i.imgur.com/3Q9Z1ZB.jpg",
+    poster: "https://i.imgur.com/3Q9Z1ZB.jpg",
+    description: "قصة رجل أعمال يواجه تحديات كبيرة.",
+    watchLink: "https://www.example.com/watch/gaafar",
+    downloadLink: "https://www.example.com/download/gaafar",
+    cast: [
+      { name: "محمد رمضان", character: "جعفر العمدة", image: "https://i.imgur.com/3Q9Z1ZB.jpg" },
+      { name: "منة فضالي", character: "نرجس", image: "https://i.imgur.com/3Q9Z1ZB.jpg" }
+    ]
+  },
+  {
+    title: "الكبير أوي",
+    image: "https://i.imgur.com/4Q9Z1ZB.jpg",
+    poster: "https://i.imgur.com/4Q9Z1ZB.jpg",
+    description: "كوميديا عن الكبير وعائلته في المزاريطة.",
+    watchLink: "https://www.example.com/watch/elkbeer",
+    downloadLink: "https://www.example.com/download/elkbeer",
+    cast: [
+      { name: "أحمد مكي", character: "الكبير أوي", image: "https://i.imgur.com/4Q9Z1ZB.jpg" },
+      { name: "بيومي فؤاد", character: "دكتور ربيع", image: "https://i.imgur.com/4Q9Z1ZB.jpg" }
+    ]
+  },
+  {
+    title: "نصيبي وقسمتك",
+    image: "https://i.imgur.com/6Q9Z1ZB.jpg",
+    poster: "https://i.imgur.com/6Q9Z1ZB.jpg",
+    description: "دراما اجتماعية متنوعة القصص.",
+    watchLink: "https://www.example.com/watch/naseeby",
+    downloadLink: "https://www.example.com/download/naseeby",
+    cast: [
+      { name: "هاني سلامة", character: "(مختلف في كل قصة)", image: "https://i.imgur.com/6Q9Z1ZB.jpg" }
+    ]
+  },
+  {
+    title: "أبو العروسة",
+    image: "https://i.imgur.com/7Q9Z1ZB.jpg",
+    poster: "https://i.imgur.com/7Q9Z1ZB.jpg",
+    description: "دراما عائلية مصرية.",
+    watchLink: "https://www.example.com/watch/abouelarousa",
+    downloadLink: "https://www.example.com/download/abouelarousa",
+    cast: [
+      { name: "سيد رجب", character: "عبد الحميد", image: "https://i.imgur.com/7Q9Z1ZB.jpg" },
+      { name: "سوسن بدر", character: "عايدة", image: "https://i.imgur.com/7Q9Z1ZB.jpg" }
+    ]
+  },
+  {
+    title: "الشارع اللي ورانا",
+    image: "https://i.imgur.com/8Q9Z1ZB.jpg",
+    poster: "https://i.imgur.com/8Q9Z1ZB.jpg",
+    description: "دراما غامضة عن منزل مسكون وأسرار الماضي.",
+    watchLink: "https://www.example.com/watch/sharea",
+    downloadLink: "https://www.example.com/download/sharea",
+    cast: [
+      { name: "درة", character: "ناديا", image: "https://i.imgur.com/8Q9Z1ZB.jpg" },
+      { name: "فاروق الفيشاوي", character: "(دور رئيسي)", image: "https://i.imgur.com/8Q9Z1ZB.jpg" }
+    ]
+  },
+  {
+    title: "الزوجة 18",
+    image: "https://i.imgur.com/9Q9Z1ZB.jpg",
+    poster: "https://i.imgur.com/9Q9Z1ZB.jpg",
+    description: "كوميديا اجتماعية عن رجل متعدد الزيجات.",
+    watchLink: "https://www.example.com/watch/zawga18",
+    downloadLink: "https://www.example.com/download/zawga18",
+    cast: [
+      { name: "حسن الرداد", character: "حمزة", image: "https://i.imgur.com/9Q9Z1ZB.jpg" }
+    ]
+  },
+  {
+    title: "بدل الحدوتة تلاتة",
+    image: "https://i.imgur.com/10Q9Z1ZB.jpg",
+    poster: "https://i.imgur.com/10Q9Z1ZB.jpg",
+    description: "ثلاث قصص منفصلة في مسلسل واحد.",
+    watchLink: "https://www.example.com/watch/badel",
+    downloadLink: "https://www.example.com/download/badel",
+    cast: [
+      { name: "دنيا سمير غانم", character: "(عدة شخصيات)", image: "https://i.imgur.com/10Q9Z1ZB.jpg" }
+    ]
+  },
+  // مسلسلات رمضان 2025
+  {
+    title: "الوصية الأخيرة",
+    image: "https://i.imgur.com/ramadan2025-1.jpg",
+    poster: "https://i.imgur.com/ramadan2025-1.jpg",
+    description: "دراما اجتماعية تدور حول صراع عائلي على ميراث ضخم بعد وفاة الأب في أجواء من التشويق.",
+    watchLink: "https://www.example.com/watch/wasya2025",
+    downloadLink: "https://www.example.com/download/wasya2025",
+    cast: [
+      { name: "ياسر جلال", character: "حسن", image: "https://i.imgur.com/ramadan2025-1a.jpg" },
+      { name: "هالة صدقي", character: "الأم", image: "https://i.imgur.com/ramadan2025-1b.jpg" }
+    ]
+  },
+  {
+    title: "ظل رجل",
+    image: "https://i.imgur.com/ramadan2025-2.jpg",
+    poster: "https://i.imgur.com/ramadan2025-2.jpg",
+    description: "ضابط شرطة يواجه مؤامرة خطيرة أثناء تحقيقه في جريمة غامضة خلال شهر رمضان.",
+    watchLink: "https://www.example.com/watch/zillragol2025",
+    downloadLink: "https://www.example.com/download/zillragol2025",
+    cast: [
+      { name: "أمير كرارة", character: "الضابط كريم", image: "https://i.imgur.com/ramadan2025-2a.jpg" },
+      { name: "ريهام عبد الغفور", character: "سلمى", image: "https://i.imgur.com/ramadan2025-2b.jpg" }
+    ]
+  },
+  {
+    title: "حارة المساكين",
+    image: "https://i.imgur.com/ramadan2025-3.jpg",
+    poster: "https://i.imgur.com/ramadan2025-3.jpg",
+    description: "حكايات إنسانية من قلب حارة شعبية تجمع بين الكوميديا والدراما.",
+    watchLink: "https://www.example.com/watch/hara2025",
+    downloadLink: "https://www.example.com/download/hara2025",
+    cast: [
+      { name: "محمد هنيدي", character: "سعيد", image: "https://i.imgur.com/ramadan2025-3a.jpg" },
+      { name: "بيومي فؤاد", character: "المعلم شوقي", image: "https://i.imgur.com/ramadan2025-3b.jpg" }
+    ]
+  }
+];
+
+// معالجة روابط الصور: استبدال أي رابط صورة غير صحيح أو مفقود بصورة افتراضية تلقائياً
+window.egyptianSeries = window.egyptianSeries.map(item => ({
+  ...item,
+  image: item.image && item.image.startsWith('http') ? item.image : 'https://via.placeholder.com/400x600?text=No+Image',
+  poster: item.poster && item.poster.startsWith('http') ? item.poster : 'https://via.placeholder.com/400x600?text=No+Image',
+  cast: item.cast ? item.cast.map(c => ({
+    ...c,
+    image: c.image && c.image.startsWith('http') ? c.image : 'https://via.placeholder.com/200x300?text=No+Image'
+  })) : undefined
+}));
+
+// تعريف مصفوفة series في window لتكون متاحة عالمياً كما في window.egyptianSeries
+window.series = [
+  {
+    title: "Breaking Bad",
+    rating: "9.5/10",
+    image: "https://image.tmdb.org/t/p/w600_and_h900_bestv2/ztkUQFLlC19CCMYHW9o1zWhJRNq.jpg",
+    description: "مدرس كيمياء يتحول إلى أكبر تاجر مخدرات.",
+    watchLink: "https://example.com/watch/breaking-bad",
+    downloadLink: "https://example.com/download/breaking-bad"
+  },
+  {
+    title: "Stranger Things",
+    rating: "8.7/10",
+    image: "https://image.tmdb.org/t/p/w500/x2LSRK2Cm7MZhjluni1msVJ3wDF.jpg",
+    description: "مجموعة أطفال يكتشفون عالمًا مقلوبًا مليئًا بالغموض.",
+    watchLink: "https://example.com/watch/stranger-things",
+    downloadLink: "https://example.com/download/stranger-things"
+  },
+  {
+    title: "The Last of Us",
+    rating: "9.0/10",
+    image: "https://image.tmdb.org/t/p/w500/uKvVjHNqB5VmOrdxqAt2F7J78ED.jpg",
+    description: "بعد انتشار وباء قاتل، رجل يحمي فتاة قد تكون الأمل للبشرية.",
+    watchLink: "https://example.com/watch/last-of-us",
+    downloadLink: "https://example.com/download/last-of-us"
+  },
+  {
+    title: "Game of Thrones",
+    rating: "9.3/10",
+    image: "https://image.tmdb.org/t/p/w500/u3bZgnGQ9T01sWNhyveQz0wH0Hl.jpg",
+    description: "صراع العروش على الممالك السبع.",
+    watchLink: "https://example.com/watch/got",
+    downloadLink: "https://example.com/download/got"
+  },
+  {
+    title: "Money Heist",
+    rating: "8.2/10",
+    image: "https://image.tmdb.org/t/p/w500/mo0FP1GxOFZT4UDde7RFDz5APXF.jpg",
+    description: "مجموعة لصوص يخططون لأكبر سرقة في التاريخ.",
+    watchLink: "https://example.com/watch/money-heist",
+    downloadLink: "https://example.com/download/money-heist"
+  },
+  {
+    title: "Peaky Blinders",
+    rating: "8.8/10",
+    image: "https://image.tmdb.org/t/p/w500/vUUqzWa2LnHIVqkaKVlVGkVcZIW.jpg",
+    description: "عصابة بيكي بلايندرز في برمنغهام.",
+    watchLink: "https://example.com/watch/peaky-blinders",
+    downloadLink: "https://example.com/download/peaky-blinders"
+  }
+];
+
+function displayEgyptianSeries() {
+  showSection('egyptianSeries');
+  const apiKey = window.TMDB_API_KEY || 'eae62805e81ccceef6046c841a23b424';
+  const defaultPoster = 'https://via.placeholder.com/400x600?text=No+Image';
+  // جلب 3 صفحات من المسلسلات المصرية من TMDB
+  const urls = [1, 2, 3].map(function(page) {
+    return `https://api.themoviedb.org/3/discover/tv?api_key=${apiKey}&language=ar&page=${page}&sort_by=popularity.desc&with_origin_country=EG`;
+  });
+  Promise.all(urls.map(function(url) { return fetch(url).then(function(r) { return r.json(); }); }))
+    .then(function(results) {
+      var tmdbEgyptianSeries = [];
+      results.forEach(function(data) {
+        if (data.results) tmdbEgyptianSeries = tmdbEgyptianSeries.concat(data.results.map(function(item) {
+          var img = item.poster_path ? (window.IMAGE_BASE_URL + item.poster_path) : defaultPoster;
+          return {
+            title: item.name,
+            rating: item.vote_average ? (item.vote_average + '/10') : '',
+            image: img,
+            poster: img,
+            description: item.overview || '',
+            watchLink: '',
+            downloadLink: ''
+          };
+        }));
+      });
+      // دمج مع المسلسلات المحلية مع معالجة الصور الافتراضية بشكل صارم
+      var allSeries = [];
+      if (window.egyptianSeries && Array.isArray(window.egyptianSeries)) {
+        allSeries = allSeries.concat(window.egyptianSeries.map(function(item) {
+          let img = (item.image && typeof item.image === 'string' && item.image.startsWith('http')) ? item.image : defaultPoster;
+          let poster = (item.poster && typeof item.poster === 'string' && item.poster.startsWith('http')) ? item.poster : defaultPoster;
+          // معالجة الصور المفقودة أو غير الصالحة
+          if (img.endsWith('.jpg') || img.endsWith('.png')) {
+            // تحقق من أن الرابط يعمل (اختياري)
+          } else {
+            img = defaultPoster;
+          }
+          if (poster.endsWith('.jpg') || poster.endsWith('.png')) {
+            // تحقق من أن الرابط يعمل (اختياري)
+          } else {
+            poster = defaultPoster;
+          }
+          return {
+            ...item,
+            image: img,
+            poster: poster
+          };
+        }));
+      }
+      renderList('egyptian-series-container', allSeries.concat(tmdbEgyptianSeries));
+      document.getElementById('egyptian-series-section-title').textContent = '📺 مسلسلات مصرية';
+    })
+    .catch(function() {
+      // fallback: عرض المسلسلات المحلية فقط إذا فشل الجلب
+      var allSeries = [];
+      if (window.egyptianSeries && Array.isArray(window.egyptianSeries)) {
+        allSeries = allSeries.concat(window.egyptianSeries.map(function(item) {
+          let img = (item.image && typeof item.image === 'string' && item.image.startsWith('http')) ? item.image : defaultPoster;
+          let poster = (item.poster && typeof item.poster === 'string' && item.poster.startsWith('http')) ? item.poster : defaultPoster;
+          if (img.endsWith('.jpg') || img.endsWith('.png')) {
+          } else {
+            img = defaultPoster;
+          }
+          if (poster.endsWith('.jpg') || poster.endsWith('.png')) {
+          } else {
+            poster = defaultPoster;
+          }
+          return {
+            ...item,
+            image: img,
+            poster: poster
+          };
+        }));
+      }
+      renderList('egyptian-series-container', allSeries);
+      document.getElementById('egyptian-series-section-title').textContent = '📺 مسلسلات مصرية';
+    });
+}
+
+function displayAllSeries() {
+  showSection('series');
+  const apiKey = window.TMDB_API_KEY || 'eae62805e81ccceef6046c841a23b424';
+  // جلب 3 صفحات من مسلسلات نتفليكس فقط
+  const urls = [1, 2, 3].map(function(page) {
+    return `https://api.themoviedb.org/3/discover/tv?api_key=${apiKey}&language=ar&page=${page}&sort_by=popularity.desc&with_networks=213`;
+  });
+  Promise.all(urls.map(function(url) { return fetch(url).then(function(r) { return r.json(); }); }))
+    .then(function(results) {
+      var tmdbNetflixSeries = [];
+      results.forEach(function(data) {
+        if (data.results) tmdbNetflixSeries = tmdbNetflixSeries.concat(data.results);
+      });
+      // دمج مع المسلسلات المحلية
+      var allSeries = [];
+      if (window.foreignSeries && Array.isArray(window.foreignSeries)) {
+        allSeries = allSeries.concat(window.foreignSeries);
+      }
+      if (window.series && Array.isArray(window.series)) {
+        allSeries = allSeries.concat(window.series);
+      }
+      // دمج مسلسلات نتفليكس مع المحلية
+      renderList('series-container', allSeries.concat(tmdbNetflixSeries));
+      document.getElementById('series-section-title').textContent = '📺 مسلسلات أجنبية';
+    })
+    .catch(function() {
+      // fallback: عرض المسلسلات المحلية فقط إذا فشل الجلب
+      var allSeries = [];
+      if (window.foreignSeries && Array.isArray(window.foreignSeries)) {
+        allSeries = allSeries.concat(window.foreignSeries);
+      }
+      if (window.series && Array.isArray(window.series)) {
+        allSeries = allSeries.concat(window.series);
+      }
+      renderList('series-container', allSeries);
+      document.getElementById('series-section-title').textContent = '📺 مسلسلات أجنبية';
+    });
+}
+
+// تعريف دالة goToDetails في index.html لتكون متاحة عالمياً
+function goToDetails(titleEncoded) {
+  const title = decodeURIComponent(titleEncoded);
+  // ابحث في جميع القوائم المحلية
+  const allItems = (window.movies || []).concat(
+    window.series || [],
+    window.anime || [],
+    window.egyptianSeries || []
+  );
+  const item = allItems.find(m => m.title === title);
+  if (item) {
+    let url = `details.html?title=${encodeURIComponent(item.title)}&rating=${encodeURIComponent(item.rating || '')}&image=${encodeURIComponent(item.image)}&description=${encodeURIComponent(item.description || '')}&watchLink=${encodeURIComponent(item.watchLink || '')}&downloadLink=${encodeURIComponent(item.downloadLink || '')}`;
+    if (item.cast) {
+      url += `&cast=${encodeURIComponent(JSON.stringify(item.cast))}`;
+    }
+    window.location.href = url;
+  }
+}
+
+// أسماء التصنيفات للأفلام
+function getGenreName(id) {
+  switch(id) {
+    case 28: return 'أكشن';
+    case 878: return 'خيال علمي';
+    case 27: return 'رعب';
+    case 18: return 'دراما';
+    default: return '';
+  }
+}
+// أسماء التصنيفات للمسلسلات
+function getSeriesGenreName(id) {
+  switch(id) {
+    case 10759: return 'أكشن';
+    case 18: return 'دراما';
+    default: return '';
+  }
+}
+// أسماء التصنيفات للأنمي
+function getAnimeGenreName(id) {
+  switch(id) {
+    case 16: return 'مغامرات';
+    case 10765: return 'خيال علمي';
+    default: return '';
+  }
+}
+// عند تحميل الصفحة أظهر الأفلام فقط
+function openSectionFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  const from = params.get('from');
+  if (from === 'anime') {
+    showSection('anime');
+    displayAllAnime();
+  } else if (from === 'series') {
+    showSection('series');
+    displayAllSeries();
+  } else if (from === 'egyptianSeries') {
+    showSection('egyptianSeries');
+    displayEgyptianSeries();
+  } else if (from === 'movies') {
+    showSection('movies');
+    displayTMDBMovies();
+  } else if (from) {
+    // إذا كانت قيمة from غير معروفة، لا تفعل شيئًا (ابق في القسم الحالي)
+    // يمكن عرض رسالة أو تجاهل
+    // لا ترجع للصفحة الرئيسية تلقائيًا
+    return;
+  } else {
+    showSection('movies');
+    displayTMDBMovies();
+  }
+  window.currentSection = from || 'movies';
+}
+openSectionFromURL();
+
+// تعديل createCard: دعم كل حالات الأنمي بدون أخطاء
+function createCard(item) {
+  const card = document.createElement("div");
+  card.className = "movie-card";
+  const defaultPoster = "https://via.placeholder.com/400x600?text=No+Image";
+  let imgSrc = defaultPoster;
+  if (item.poster && typeof item.poster === 'string' && item.poster.startsWith('http')) {
+    imgSrc = item.poster;
+  } else if (item.image && typeof item.image === 'string' && item.image.startsWith('http')) {
+    imgSrc = item.image;
+  } else if (item.poster_path) {
+    imgSrc = window.IMAGE_BASE_URL + item.poster_path;
+  }
+  const title = item.title || item.name || 'أنمي غير معروف';
+  const rating = item.vote_average ? (item.vote_average + '/10 ⭐') : (item.rating || 'بدون تقييم');
+  const description = item.description || item.overview || '';
+  const watch = item.watchLink || '';
+  const download = item.downloadLink || '';
+  // منطق TMDB: فقط إذا كان العنصر من TMDB فعلاً (يمتلك media_type أو tmdb_id أو poster_path)
+  const isTMDB = (
+    (item.media_type || item.tmdb_id || item.poster_path)
+  );
+  let fromSection = '';
+  if (window.currentSection) {
+    fromSection = window.currentSection;
+  } else if (item.type === 'anime' || item.anime) {
+    fromSection = 'anime';
+  } else if (item.nationality === 'مصري') {
+    fromSection = 'egyptianSeries';
+  } else if (item.nationality === 'أجنبي' || item.type === 'series') {
+    fromSection = 'series';
+  } else {
+    fromSection = 'movies';
+  }
+  card.innerHTML = `
+    <img src="${imgSrc}" alt="${title}" onerror="this.onerror=null;this.src='${defaultPoster}'" />
+    <h3>${title}</h3>
+    <p>${rating}</p>
+    <button class="watch-btn">شاهد الآن</button>
+  `;
+  card.querySelector('.watch-btn').addEventListener('click', function(e) {
+    e.preventDefault();
+    let url = `details.html?title=${encodeURIComponent(title)}` +
+      `&rating=${encodeURIComponent(item.rating || item.vote_average || '')}` +
+      `&image=${encodeURIComponent(imgSrc)}` +
+      `&description=${encodeURIComponent(description)}` +
+      `&watchLink=${encodeURIComponent(watch)}` +
+      `&downloadLink=${encodeURIComponent(download)}` +
+      `&from=${fromSection}`;
+    if (item.cast) {
+      url += `&cast=${encodeURIComponent(JSON.stringify(item.cast))}`;
+    }
+    if (isTMDB) {
+      url += `&tmdb_id=${encodeURIComponent(item.id || item.tmdb_id || '')}&type=movie`;
+    }
+    window.location.href = url;
+  });
+  return card;
+}
+
+// تعديل دالة searchMovies للبحث في قاعدة بيانات TMDB (multi) وعرض أي نوع نتيجة (فيلم، مسلسل، أنمي) في قسم الأفلام
+function searchMovies() {
+  const query = document.getElementById('searchInput').value.trim();
+  const container = document.getElementById('movies-container');
+  const noMoviesMsg = document.getElementById('no-movies-message');
+  if (!query) {
+    // إذا كان البحث فارغًا، أعد عرض الأفلام الافتراضية
+    displayTMDBMovies();
+    return;
+  }
+  showSection('movies');
+  const apiKey = window.TMDB_API_KEY || 'eae62805e81ccceef6046c841a23b424';
+  // البحث في TMDB عن أي نوع (فيلم، مسلسل، أنمي)
+  fetch(`https://api.themoviedb.org/3/search/multi?api_key=${apiKey}&language=ar&query=${encodeURIComponent(query)}`)
+    .then(r => r.json())
+    .then(data => {
+      if (data && data.results && data.results.length > 0) {
+        // معالجة النتائج: عرض أي نوع (فيلم، مسلسل، أنمي)
+        const results = data.results.map(item => {
+          let title = item.title || item.name || '';
+          let img = item.poster_path ? (window.IMAGE_BASE_URL + item.poster_path) : 'https://via.placeholder.com/400x600?text=No+Image';
+          let type = item.media_type;
+          return {
+            title: title,
+            rating: item.vote_average ? (item.vote_average + '/10') : '',
+            image: img,
+            poster: img,
+            description: item.overview || '',
+            watchLink: '',
+            downloadLink: '',
+            type: type,
+            id: item.id
+          };
+        });
+        renderList('movies-container', results);
+        document.getElementById('movies-section-title').textContent = `نتائج البحث عن: ${query}`;
+      } else {
+        container.innerHTML = "";
+        if (noMoviesMsg) noMoviesMsg.style.display = 'block';
+        document.getElementById('movies-section-title').textContent = `نتائج البحث عن: ${query}`;
+      }
+    })
+    .catch(() => {
+      container.innerHTML = "";
+      if (noMoviesMsg) noMoviesMsg.style.display = 'block';
+      document.getElementById('movies-section-title').textContent = `نتائج البحث عن: ${query}`;
+    });
+}
+</script>
+<style>
+.anime-top-card {
+  display: flex;
+  align-items: flex-start;
+  background: #181818;
+  border-radius: 16px;
+  box-shadow: 0 4px 18px #000a, 0 1px 0 #fff2 inset;
+  margin-bottom: 32px;
+  padding: 18px 18px 18px 0;
+  gap: 24px;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.anime-top-img {
+  width: 180px;
+  height: 260px;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 2px 12px #0008;
+}
+.anime-top-details {
+  flex: 1;
+  text-align: right;
+  padding-top: 8px;
+}
+.anime-top-title {
+  font-family: 'Montserrat', 'Arial Black', Arial, sans-serif;
+  font-size: 2rem;
+  color: #e50914;
+  margin-bottom: 8px;
+  margin-top: 0;
+}
+.anime-top-rating {
+  color: #fff;
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+}
+.anime-top-desc {
+  color: #eee;
+  font-size: 1rem;
+  line-height: 1.7;
+  margin-bottom: 0;
+}
+</style>
+</body>
+</html>
+
+
+
